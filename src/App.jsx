@@ -1,0 +1,20 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Layout from "./components/Layout";
+import Dashboard from "./pages/Dashboard";
+import Students from "./pages/Students";
+import AttendanceLogs from "./pages/AttendanceLogs";
+import "./styles.css";
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="students" element={<Students />} />
+          <Route path="attendance" element={<AttendanceLogs />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+}
