@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import Students from "./pages/Students";
+import SessionsPage from "./pages/SessionsPage";
 import AttendanceLogs from "./pages/AttendanceLogs";
 import "./styles.css";
 
@@ -13,6 +14,7 @@ export default function App() {
           <Route index element={<Dashboard />} />
           <Route path="students" element={<Students />} />
           <Route path="attendance" element={<AttendanceLogs />} />
+          <Route path="sessions" element={<SessionsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

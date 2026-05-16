@@ -1,6 +1,7 @@
 import { DataTable } from "../components/DataTable";
 import { SummaryCard } from "../components/SummaryCard";
 import { endpoints } from "../api/client";
+import { Link } from "react-router-dom";
 import { useApiData } from "../hooks/useApiData";
 
 export default function Dashboard() {
@@ -31,11 +32,21 @@ export default function Dashboard() {
 
   return (
     <section className="page">
-      <header className="page-header">
+      <header className="flex items-center justify-between mb-6">
         <div>
           <p className="eyebrow">Overview</p>
           <h1>Dashboard</h1>
           <p className="muted">Realtime snapshot of attendance activity and student totals.</p>
+        </div>
+
+        <div className="">
+          <Link to="/sessions">
+            <button
+              className="primary"
+            >
+              Manage Sessions
+            </button>
+          </Link>
         </div>
       </header>
 

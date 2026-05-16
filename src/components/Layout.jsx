@@ -4,8 +4,9 @@ import { NavLink, Outlet } from "react-router-dom";
 
 const links = [
   { to: "/", label: "Dashboard" },
-  { to: "/students", label: "Students" },
+  { to: "/students", label: "Enrollment" },
   { to: "/attendance", label: "Attendance Logs" },
+  { to: "/sessions", label: "Sessions" },
 ];
 
 export default function Layout() {
@@ -18,7 +19,7 @@ export default function Layout() {
 
       {/* Sidebar (mobile: overlay, desktop: island) */}
       <aside className={`sidebar glassy${sidebarOpen ? " open" : ""}`}>
-        <div className="brand">AI Attendance</div>
+        <div className="brand">AI Attendance System</div>
         <nav>
           {links.map((link) => (
             <NavLink
