@@ -1,18 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 
-import { api, endpoints } from "../api/client";
-import { DataTable } from "../components/DataTable";
-import { useApiData } from "../hooks/useApiData";
+import { api } from "../api/client";
 
 export default function Students() {
-  const {
-    data: students,
-    loading,
-    error,
-    refetch,
-  } = useApiData(endpoints.students);
-
   const webcamRef = useRef(null);
 
   const [form, setForm] = useState({
@@ -21,45 +12,30 @@ export default function Students() {
     department: "",
   });
 
-  const [submitting, setSubmitting] =
-    useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [feedback, setFeedback] = useState(null);
+  const [error, setError] = useState(null);
 
-  const [feedback, setFeedback] =
-    useState(null);
+  const [captureMode, setCaptureMode] = useState("upload");
 
-  const [captureMode, setCaptureMode] =
-    useState("upload");
-
-  // MULTIPLE IMAGES
-  const [capturedImages, setCapturedImages] =
-    useState([]);
-
-  const [uploadedFiles, setUploadedFiles] =
-    useState([]);
+  const [capturedImages, setCapturedImages] = useState([]);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
 
   const [devices, setDevices] = useState([]);
+  const [selectedDevice, setSelectedDevice] = useState("");
 
-  const [selectedDevice, setSelectedDevice] =
-    useState("");
-
-  // LOAD CAMERAS
   useEffect(() => {
     async function loadDevices() {
       try {
-        const mediaDevices =
-          await navigator.mediaDevices.enumerateDevices();
-
+        const mediaDevices = await navigator.mediaDevices.enumerateDevices();
         const videoDevices = mediaDevices.filter(
-          (device) =>
-            device.kind === "videoinput"
+          (device) => device.kind === "videoinput"
         );
 
         setDevices(videoDevices);
 
         if (videoDevices.length > 0) {
-          setSelectedDevice(
-            videoDevices[0].deviceId
-          );
+          setSelectedDevice(videoDevices[0].deviceId);
         }
       } catch (err) {
         console.error(err);
@@ -72,67 +48,40 @@ export default function Students() {
   const handleChange = (event) => {
     setForm((prev) => ({
       ...prev,
-      [event.target.name]:
-        event.target.value,
+      [event.target.name]: event.target.value,
     }));
   };
 
-  // CAPTURE IMAGE
   const captureImage = () => {
-    const screenshot =
-      webcamRef.current?.getScreenshot();
-
+    const screenshot = webcamRef.current?.getScreenshot();
     if (!screenshot) return;
 
-    setCapturedImages((prev) => [
-      ...prev,
-      screenshot,
-    ]);
+    setCapturedImages((prev) => [...prev, screenshot]);
   };
 
-  // REMOVE CAPTURED IMAGE
   const removeCapturedImage = (index) => {
-    setCapturedImages((prev) =>
-      prev.filter((_, i) => i !== index)
-    );
+    setCapturedImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // CLEAR CAPTURED IMAGES
   const clearCapturedImages = () => {
     setCapturedImages([]);
   };
 
-  // HANDLE MULTIPLE FILES
   const handleFileChange = (event) => {
-    const files = Array.from(
-      event.target.files
-    );
-
-    setUploadedFiles((prev) => [
-      ...prev,
-      ...files,
-    ]);
+    const files = Array.from(event.target.files);
+    setUploadedFiles((prev) => [...prev, ...files]);
   };
 
-  // REMOVE UPLOADED FILE
   const removeUploadedFile = (index) => {
-    setUploadedFiles((prev) =>
-      prev.filter((_, i) => i !== index)
-    );
+    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // CLEAR UPLOADED FILES
   const clearUploadedFiles = () => {
     setUploadedFiles([]);
   };
 
-  // BASE64 -> FILE
-  const base64ToFile = async (
-    base64,
-    filename
-  ) => {
+  const base64ToFile = async (base64, filename) => {
     const response = await fetch(base64);
-
     const blob = await response.blob();
 
     return new File([blob], filename, {
@@ -144,149 +93,104 @@ export default function Students() {
     event.preventDefault();
 
     setSubmitting(true);
-
     setFeedback(null);
+    setError(null);
 
     try {
       const formData = new FormData();
-
       formData.append("name", form.name);
+      formData.append("matric_no", form.matricNo);
+      formData.append("department", form.department);
 
-      formData.append(
-        "matric_no",
-        form.matricNo
-      );
-
-      formData.append(
-        "department",
-        form.department
-      );
-
-      // UPLOAD MODE
       if (captureMode === "upload") {
         uploadedFiles.forEach((file) => {
           formData.append("images", file);
         });
       }
 
-      // CAMERA MODE
       if (captureMode === "camera") {
-        for (
-          let i = 0;
-          i < capturedImages.length;
-          i++
-        ) {
-          const imageFile =
-            await base64ToFile(
-              capturedImages[i],
-              `${form.matricNo}_${i + 1}.jpg`
-            );
-
-          formData.append(
-            "images",
-            imageFile
+        for (let i = 0; i < capturedImages.length; i++) {
+          const imageFile = await base64ToFile(
+            capturedImages[i],
+            `${form.matricNo}_${i + 1}.jpg`
           );
+
+          formData.append("images", imageFile);
         }
       }
 
-      await api.post(
-        endpoints.students,
-        formData,
-        {
-          headers: {
-            "Content-Type":
-              "multipart/form-data",
-          },
-        }
-      );
-
-      setForm({
-        name: "",
-        matricNo: "",
-        department: "",
+      const res = await api.post("/students/register", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
 
-      setCapturedImages([]);
+      const data = res?.data;
 
-      setUploadedFiles([]);
+      const isSuccess =
+        res.status >= 200 &&
+        res.status < 300 &&
+        (data?.success === true || data?.success === undefined);
 
-      setFeedback({
-        type: "success",
-        message:
-          "Student enrolled successfully.",
-      });
+      if (isSuccess) {
+        setError(null);
+        setForm({
+          name: "",
+          matricNo: "",
+          department: "",
+        });
 
-      refetch();
+        setCapturedImages([]);
+        setUploadedFiles([]);
+
+        setFeedback({
+          type: "success",
+          message: data?.message ?? "Student enrolled successfully.",
+        });
+      } else {
+        setFeedback({
+          type: "error",
+          message: data?.message ?? "Failed to enroll student.",
+        });
+      }
     } catch (err) {
       console.error(err);
-
-      setFeedback({
-        type: "error",
-        message:
-          err.response?.data?.error ??
-          "Failed to enroll student.",
-      });
+      setError(err.response?.data?.error ?? "Failed to enroll student.");
     } finally {
       setSubmitting(false);
     }
   };
 
-  const rows = students.map((student) => ({
-    id: student.id,
-    name: student.name,
-    matric_no: student.matric_no,
-    department: student.department,
-    created_at: student.created_at
-      ? new Date(
-          student.created_at
-        ).toLocaleString()
-      : "—",
-  }));
-
   return (
     <section className="page">
       <header className="page-header">
         <div>
-          <p className="eyebrow">
-            Enrollment
-          </p>
-
+          <p className="eyebrow">Enrollment</p>
           <h1>Students</h1>
-
-          <p className="muted">
-            Manage students synced with
-            backend.
-          </p>
+          <p className="muted">Manage students synced with backend.</p>
         </div>
       </header>
 
       {feedback ? (
-        <div
-          className={`banner banner-${feedback.type}`}
-        >
-          {feedback.message}
-        </div>
+        <div className={`banner banner-${feedback.type}`}>{feedback.message}</div>
       ) : null}
 
-      {error ? (
-        <div className="banner banner-error">
-          {error}
-        </div>
-      ) : null}
+      {error ? <div className="banner banner-error">{error}</div> : null}
 
-      <section className="panel">
-        <div className="panel-header">
+      <section className="panel create-student-card">
+        <div className="create-student-header">
+          <p className="eyebrow">Enrollment Form</p>
           <h2>Register New Student</h2>
+          <p className="muted">
+            Add a student record and attach reference images for attendance.
+          </p>
         </div>
 
-        <form
-          className="form-grid"
-          onSubmit={handleSubmit}
-        >
-          <label>
-            Full Name
-
+        <form className="create-student-grid" onSubmit={handleSubmit}>
+          <label className="create-student-field create-student-span-2">
+            <span className="create-student-label">Full Name</span>
             <input
+              className="input"
               name="name"
               value={form.name}
               onChange={handleChange}
@@ -295,10 +199,10 @@ export default function Students() {
             />
           </label>
 
-          <label>
-            Matric Number
-
+          <label className="create-student-field">
+            <span className="create-student-label">Matric Number</span>
             <input
+              className="input"
               name="matricNo"
               value={form.matricNo}
               onChange={handleChange}
@@ -307,10 +211,10 @@ export default function Students() {
             />
           </label>
 
-          <label>
-            Department
-
+          <label className="create-student-field">
+            <span className="create-student-label">Department</span>
             <input
+              className="input"
               name="department"
               value={form.department}
               onChange={handleChange}
@@ -319,84 +223,52 @@ export default function Students() {
             />
           </label>
 
-          {/* MODE SELECT */}
-          <div>
-            <label>
-              Image Input Method
-            </label>
-
+          <div className="create-student-field create-student-span-2">
+            <label className="create-student-label">Image Input Method</label>
             <select
+              className="input"
               value={captureMode}
-              onChange={(e) =>
-                setCaptureMode(
-                  e.target.value
-                )
-              }
+              onChange={(e) => setCaptureMode(e.target.value)}
             >
-              <option value="upload">
-                Upload Images
-              </option>
-
-              <option value="camera">
-                Live Camera Capture
-              </option>
+              <option value="upload">Upload Images</option>
+              <option value="camera">Live Camera Capture</option>
             </select>
           </div>
 
-          {/* UPLOAD MODE */}
           {captureMode === "upload" && (
-            <div className="camera-section">
-              <label>
-                Upload Student Images
-              </label>
+            <div className="camera-section create-student-span-2">
+              <label className="create-student-label">Upload Student Images</label>
 
               <input
+                className="file-input"
                 type="file"
                 accept="image/*"
                 multiple
                 onChange={handleFileChange}
               />
 
-              {uploadedFiles.length >
-                0 && (
+              {uploadedFiles.length > 0 && (
                 <>
                   <div className="preview-grid">
-                    {uploadedFiles.map(
-                      (file, index) => (
-                        <div
-                          key={index}
-                          className="preview"
-                        >
-                          <img
-                            src={URL.createObjectURL(
-                              file
-                            )}
-                            alt={`Upload ${index}`}
-                            width="150"
-                          />
+                    {uploadedFiles.map((file, index) => (
+                      <div key={index} className="preview">
+                        <img src={URL.createObjectURL(file)} alt={`Upload ${index}`} width="150" />
 
-                          <button
-                            type="button"
-                            className="secondary"
-                            onClick={() =>
-                              removeUploadedFile(
-                                index
-                              )
-                            }
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      )
-                    )}
+                        <button
+                          type="button"
+                          className="secondary"
+                          onClick={() => removeUploadedFile(index)}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
                   </div>
 
                   <button
                     type="button"
-                    className="secondary"
-                    onClick={
-                      clearUploadedFiles
-                    }
+                    className="secondary create-student-secondary"
+                    onClick={clearUploadedFiles}
                   >
                     Clear All Uploads
                   </button>
@@ -405,36 +277,20 @@ export default function Students() {
             </div>
           )}
 
-          {/* CAMERA MODE */}
           {captureMode === "camera" && (
-            <div className="camera-section">
-              <label>
-                Select Camera
-              </label>
+            <div className="camera-section create-student-span-2">
+              <label className="create-student-label">Select Camera</label>
 
               <select
+                className="input"
                 value={selectedDevice}
-                onChange={(e) =>
-                  setSelectedDevice(
-                    e.target.value
-                  )
-                }
+                onChange={(e) => setSelectedDevice(e.target.value)}
               >
-                {devices.map(
-                  (device, index) => (
-                    <option
-                      key={device.deviceId}
-                      value={
-                        device.deviceId
-                      }
-                    >
-                      {device.label ||
-                        `Camera ${
-                          index + 1
-                        }`}
-                    </option>
-                  )
-                )}
+                {devices.map((device, index) => (
+                  <option key={device.deviceId} value={device.deviceId}>
+                    {device.label || `Camera ${index + 1}`}
+                  </option>
+                ))}
               </select>
 
               <Webcam
@@ -442,61 +298,37 @@ export default function Students() {
                 ref={webcamRef}
                 screenshotFormat="image/jpeg"
                 videoConstraints={{
-                  deviceId:
-                    selectedDevice,
+                  deviceId: selectedDevice,
                 }}
                 className="webcam"
               />
 
-              <button
-                type="button"
-                onClick={captureImage}
-                className="secondary"
-              >
+              <button type="button" onClick={captureImage} className="secondary create-student-secondary">
                 Capture Image
               </button>
 
-              {capturedImages.length >
-                0 && (
+              {capturedImages.length > 0 && (
                 <>
                   <div className="preview-grid">
-                    {capturedImages.map(
-                      (
-                        image,
-                        index
-                      ) => (
-                        <div
-                          key={index}
-                          className="preview"
-                        >
-                          <img
-                            src={image}
-                            alt={`Capture ${index}`}
-                            width="140"
-                          />
+                    {capturedImages.map((image, index) => (
+                      <div key={index} className="preview">
+                        <img src={image} alt={`Capture ${index}`} width="140" />
 
-                          <button
-                            type="button"
-                            className="secondary"
-                            onClick={() =>
-                              removeCapturedImage(
-                                index
-                              )
-                            }
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      )
-                    )}
+                        <button
+                          type="button"
+                          className="secondary"
+                          onClick={() => removeCapturedImage(index)}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
                   </div>
 
                   <button
                     type="button"
-                    className="secondary"
-                    onClick={
-                      clearCapturedImages
-                    }
+                    className="secondary create-student-secondary"
+                    onClick={clearCapturedImages}
                   >
                     Clear All Captures
                   </button>
@@ -505,51 +337,10 @@ export default function Students() {
             </div>
           )}
 
-          <button
-            type="submit"
-            className="primary"
-            disabled={submitting}
-          >
-            {submitting
-              ? "Enrolling..."
-              : "Enroll Student"}
+          <button type="submit" className="primary create-student-submit" disabled={submitting}>
+            {submitting ? "Enrolling..." : "Enroll Student"}
           </button>
         </form>
-      </section>
-
-      <section className="panel">
-        <div className="panel-header">
-          <h2>All Students</h2>
-        </div>
-
-        {loading ? (
-          <p className="muted">
-            Loading students...
-          </p>
-        ) : (
-          <DataTable
-            columns={[
-              {
-                key: "name",
-                label: "Name",
-              },
-              {
-                key: "matric_no",
-                label: "Matric No",
-              },
-              {
-                key: "department",
-                label: "Department",
-              },
-              {
-                key: "created_at",
-                label: "Created",
-              },
-            ]}
-            rows={rows}
-            emptyLabel="No students found."
-          />
-        )}
       </section>
     </section>
   );

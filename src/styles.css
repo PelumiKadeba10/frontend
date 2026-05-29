@@ -110,10 +110,24 @@ body {
   padding: 2.5rem;
   background: #f5f6fa;
   padding-left: 260px;
+  min-width: 0;
+  overflow-x: hidden;
 }
 
 .page-header h1 {
   margin: 0;
+}
+
+.dashboard-header {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dashboard-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 20px;
 }
 
 .eyebrow {
@@ -165,6 +179,167 @@ body {
   padding: 1.5rem;
   margin-top: 1.5rem;
   box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+  min-width: 0;
+}
+
+.create-session-card {
+  position: relative;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.create-session-header {
+  margin-bottom: 1.25rem;
+}
+
+.create-session-header h3 {
+  margin: 0;
+  font-size: 1.35rem;
+  color: #0f172a;
+}
+
+.create-session-header .muted {
+  margin-bottom: 0;
+}
+
+.create-session-banner {
+  margin-top: 0;
+}
+
+.create-session-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.create-session-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.create-session-span-2 {
+  grid-column: 1 / -1;
+}
+
+.create-session-label {
+  font-size: 0.9rem;
+  color: #334155;
+  font-weight: 600;
+}
+
+.create-session-required {
+  color: #19253d;
+}
+
+.create-session-card input {
+  width: 100%;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.create-session-card input:focus {
+  border-color: #19253d;
+  box-shadow: 0 0 0 3px rgba(25, 37, 61, 0.12);
+  background: #fff;
+}
+
+.create-session-submit {
+  grid-column: 1 / -1;
+  justify-self: start;
+  padding: 0.75rem 1.15rem;
+  min-width: 170px;
+}
+
+.create-student-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.create-student-header {
+  margin-bottom: 1.25rem;
+}
+
+.create-student-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #0f172a;
+}
+
+.create-student-header .muted {
+  margin-bottom: 0;
+}
+
+.create-student-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.create-student-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.create-student-span-2 {
+  grid-column: 1 / -1;
+}
+
+.create-student-label {
+  font-size: 0.9rem;
+  color: #334155;
+  font-weight: 600;
+}
+
+.create-student-card input,
+.create-student-card select {
+  width: 100%;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.create-student-card input:focus,
+.create-student-card select:focus {
+  border-color: #19253d;
+  box-shadow: 0 0 0 3px rgba(25, 37, 61, 0.12);
+  background: #fff;
+}
+
+.file-input {
+  padding: 0.75rem;
+}
+
+.create-student-secondary {
+  align-self: flex-start;
+}
+
+.create-student-submit {
+  grid-column: 1 / -1;
+  justify-self: start;
+  padding: 0.75rem 1.15rem;
+  min-width: 170px;
+}
+
+.create-student-card .camera-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  min-width: 0;
+}
+
+.create-student-card .preview-grid {
+  margin-top: 0.25rem;
+}
+
+.create-student-card .preview {
+  background: #f8fafc;
 }
 
 .panel-header {
@@ -198,6 +373,24 @@ td {
   padding: 0.75rem 0.5rem;
   text-align: left;
   border-bottom: 1px solid #e2e8f0;
+}
+
+.sessions-table-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%;
+  max-width: 100%;
+  display: block;
+}
+
+.sessions-table {
+  width: max-content;
+  min-width: 100%;
+}
+
+.sessions-table th,
+.sessions-table td {
+  white-space: nowrap;
 }
 
 th {
@@ -286,7 +479,7 @@ button.primary {
 }
 
 button.primary:hover:not(:disabled) {
-  background: #1d4ed8;
+  background: #283867;
 }
 
 button.primary:disabled {
@@ -298,6 +491,11 @@ button.secondary {
   background: transparent;
   color: #2563eb;
   border: 1px solid #2563eb;
+}
+
+button.secondary:hover:not(:disabled) {
+  background: #2563eb;
+  color: #fff;
 }
 
 .filter-bar input[type="date"] {
@@ -429,4 +627,185 @@ button.secondary {
   .preview img {
     height: 120px;
   }
+
+  .create-session-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .create-session-span-2 {
+    grid-column: auto;
+  }
+
+  .create-session-submit {
+    width: 100%;
+    justify-self: stretch;
+  }
+
+  .create-student-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .create-student-span-2 {
+    grid-column: auto;
+  }
+
+  .create-student-submit {
+    width: 100%;
+    justify-self: stretch;
+  }
+
+  .create-student-secondary {
+    width: 100%;
+  }
+}
+
+/* Modal Overlay */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 1000;
+}
+
+/* Modal Box */
+.modal-content {
+  background: white;
+  width: 90%;
+  max-width: 450px;
+
+  padding: 24px;
+  border-radius: 16px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+
+  animation: modalFade 0.25s ease;
+}
+
+/* Title */
+.modal-content h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #222;
+}
+
+/* Inputs */
+.modal-content input {
+  width: 100%;
+  padding: 12px 14px;
+
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+
+  font-size: 15px;
+  outline: none;
+
+  transition: 0.2s ease;
+}
+
+.modal-content input:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+}
+
+/* Buttons Container */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+/* Buttons */
+.modal-actions button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 10px;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+/* Save Button */
+.save-btn {
+  background: #7c3aed;
+  color: white;
+}
+
+.save-btn:hover {
+  background: #6d28d9;
+}
+
+/* Cancel Button */
+.cancel-btn {
+  background: #f3f4f6;
+  color: #333;
+}
+
+.cancel-btn:hover {
+  background: #e5e7eb;
+}
+
+/* Animation */
+@keyframes modalFade {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 1rem;
+}
+
+.table-toolbar h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.refresh-btn {
+  border: none;
+  background: #7c3aed;
+  color: white;
+
+  padding: 10px 16px;
+  border-radius: 10px;
+
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+
+  transition: 0.2s ease;
+}
+
+.refresh-btn:hover {
+  background: #6d28d9;
+}
+
+.refresh-btn:active {
+  transform: scale(0.98);
 }

@@ -1,8 +1,14 @@
 import { useState } from "react";
+import { api, endpoints } from "../api/client";
 
 export default function CreateSessionModal({ onCreated }) {
   const [courseCode, setCourseCode] = useState("");
+  const [lecturer, setLecturer] = useState("");
   const [date, setDate] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [title, setTitle] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
 
@@ -10,29 +16,25 @@ export default function CreateSessionModal({ onCreated }) {
     if (!courseCode || !date) {
       setMessage({
         type: "error",
-        text: "Please fill all fields.",
+        text: "Course code and date are required.",
       });
       return;
     }
 
-    setLoading(true);
-    setMessage(null);
-
     try {
-      const res = await fetch("/api/sessions/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          course_code: courseCode,
-          date,
-        }),
+      setLoading(true);
+      setMessage(null);
+
+      const res = await api.post(`${endpoints.sessions}`, {
+        course_code: courseCode,
+        date,
+        start_time: startTime || null,
+        end_time: endTime || null,
+        title: title || null,
+        lecturer: lecturer || null,
       });
 
-      const data = await res.json();
-
-      if (data.success) {
+      if (res.data.success) {
         setMessage({
           type: "success",
           text: "Session created successfully.",
@@ -40,20 +42,21 @@ export default function CreateSessionModal({ onCreated }) {
 
         setCourseCode("");
         setDate("");
-
-        if (onCreated) {
-          onCreated();
-        }
+        setStartTime("");
+        setEndTime("");
+        setTitle("");
+        setLecturer("");
+        onCreated?.();
       } else {
         setMessage({
           type: "error",
-          text: data.message || "Failed to create session.",
+          text: res.data.message || "Failed to create session.",
         });
       }
     } catch (err) {
       setMessage({
         type: "error",
-        text: "Error creating session.",
+        text: "Server error while creating session.",
       });
     } finally {
       setLoading(false);
@@ -61,18 +64,19 @@ export default function CreateSessionModal({ onCreated }) {
   };
 
   return (
-    <section className="page">
-      {/* <header className="page-header">
-        <div>
-          <p className="muted">
-            Create a new attendance session for a course.
-          </p>
-        </div>
-      </header> */}
+    <div className="create-session-card panel">
+      <div className="create-session-header">
+        <p className="eyebrow">Attendance Management</p>
+        <h3>Create Session</h3>
+        <p className="muted">
+          Start a new attendance session for a course.
+        </p>
+      </div>
 
-      {message ? (
+      {/* MESSAGE */}
+      {message && (
         <div
-          className={`banner ${
+          className={`banner create-session-banner ${
             message.type === "error"
               ? "banner-error"
               : "banner-success"
@@ -80,59 +84,85 @@ export default function CreateSessionModal({ onCreated }) {
         >
           {message.text}
         </div>
-      ) : null}
+      )}
 
-      <section className="panel">
-        <div className="panel-header">
-          <div>
-            <h2>Session Details</h2>
-            <p className="muted">
-              Fill in the course code and session date to create a new attendance session.
-            </p>
-          </div>
-        </div>
+      {/* FORM */}
+      <div className="create-session-grid">
+        <label className="create-session-field create-session-span-2">
+          <span className="create-session-label">
+            Course Code <span className="create-session-required">*</span>
+          </span>
+          <input
+            className="input"
+            type="text"
+            placeholder="CSC 501"
+            value={courseCode}
+            onChange={(e) => setCourseCode(e.target.value)}
+          />
+        </label>
 
-        <div
-          style={{
-            display: "grid",
-            gap: "1rem",
-            maxWidth: "500px",
-          }}
+        <label className="create-session-field">
+          <span className="create-session-label">
+            Session Date <span className="create-session-required">*</span>
+          </span>
+          <input
+            className="input"
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+        </label>
+
+        <label className="create-session-field">
+          <span className="create-session-label">Start Time</span>
+          <input
+            className="input"
+            type="time"
+            value={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
+          />
+        </label>
+
+        <label className="create-session-field">
+          <span className="create-session-label">End Time</span>
+          <input
+            className="input"
+            type="time"
+            value={endTime}
+            onChange={(e) => setEndTime(e.target.value)}
+          />
+        </label>
+
+        <label className="create-session-field create-session-span-2">
+          <span className="create-session-label">Title (optional)</span>
+          <input
+            className="input"
+            type="text"
+            placeholder="e.g. Midterm Attendance"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </label>
+
+        <label className="create-session-field create-session-span-2">
+          <span className="create-session-label">Lecturer (optional)</span>
+          <input
+            className="input"
+            type="text"
+            placeholder="Dr. John Doe"
+            value={lecturer}
+            onChange={(e) => setLecturer(e.target.value)}
+          />
+        </label>
+        <button
+          className="primary create-session-submit"
+          type="button"
+          onClick={createSession}
+          disabled={loading}
         >
-          <div>
-            <label className="muted">Course Code</label>
-
-            <input
-              type="text"
-              placeholder="e.g. CSC 501"
-              value={courseCode}
-              onChange={(e) => setCourseCode(e.target.value)}
-              className="input"
-            />
-          </div>
-
-          <div>
-            <label className="muted">Session Date</label>
-
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="input"
-            />
-          </div>
-
-          <div>
-            <button
-              onClick={createSession}
-              disabled={loading}
-              className="button button-primary"
-            >
-              {loading ? "Creating..." : "Create Session"}
-            </button>
-          </div>
-        </div>
-      </section>
-    </section>
+          {loading ? "Creating..." : "Create Session"}
+        </button>
+      </div>
+    </div>
   );
 }
