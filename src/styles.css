@@ -498,6 +498,73 @@ button.secondary:hover:not(:disabled) {
   color: #fff;
 }
 
+.status-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 170px;
+  height: 42px;
+  padding: 0.25rem;
+  border-radius: 999px;
+  border: 1px solid #cbd5e1;
+  background: #e2e8f0;
+  color: #0f172a;
+  overflow: hidden;
+  transition: opacity 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.status-toggle:hover:not(:disabled) {
+  border-color: #94a3b8;
+}
+
+.status-toggle:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.status-toggle-option {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.status-toggle-knob {
+  position: absolute;
+  top: 0.25rem;
+  left: 0.25rem;
+  width: calc(50% - 0.25rem);
+  height: calc(100% - 0.5rem);
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+  transition: transform 0.22s ease, background 0.22s ease;
+}
+
+.status-toggle-active .status-toggle-knob {
+  transform: translateX(0);
+}
+
+.status-toggle-inactive .status-toggle-knob {
+  transform: translateX(100%);
+}
+
+.status-toggle-active .status-toggle-option-active,
+.status-toggle-inactive .status-toggle-option-inactive {
+  color: #0f172a;
+}
+
+.status-toggle-active .status-toggle-option-inactive,
+.status-toggle-inactive .status-toggle-option-active {
+  color: #64748b;
+}
+
 .filter-bar input[type="date"] {
   width: 220px;
 }

@@ -108,20 +108,20 @@ export default function StudentsPage() {
       <table className="table">
         <thead>
           <tr>
-            <th>S/N</th>
+            <th>No</th>
             <th>Name</th>
             <th>Matric No</th>
             <th>Department</th>
-            <th>Image No</th>
-            <th>Actions</th>
+            <th>Images</th>
+            <th style={{ textAlign: "center" }}>Actions</th>
           </tr>
         </thead>
 
         <tbody>
           {paginatedStudents.length > 0 ? (
-            paginatedStudents.map((s) => (
+            paginatedStudents.map((s, index) => (
               <tr key={s.id}>
-                <td>{s.id}</td>
+                <td>{(page - 1) * pageSize + index + 1}</td>
                 <td>{s.name}</td>
                 <td>{s.matric_no}</td>
                 <td>{s.department}</td>
