@@ -5,6 +5,7 @@ import Students from "./pages/Students";
 import SessionsPage from "./pages/SessionsPage";
 import AttendanceLogs from "./pages/AttendanceLogs";
 import Management from "./pages/Management";
+import DeviceLogs from "./pages/DeviceLogs";
 import "./styles.css";
 
 export default function App() {
@@ -17,6 +18,7 @@ export default function App() {
           <Route path="attendance" element={<AttendanceLogs />} />
           <Route path="sessions" element={<SessionsPage />} />
           <Route path="management" element={<Management />} />
+          <Route path="device-logs" element={<DeviceLogs />} />
         </Route>
       </Routes>
     </BrowserRouter>

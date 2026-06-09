@@ -5,9 +5,10 @@ import { NavLink, Outlet } from "react-router-dom";
 const links = [
   { to: "/", label: "Dashboard" },
   { to: "/students", label: "Student Enrollment" },
-    { to: "/management", label: "Student Management" },
+  { to: "/management", label: "Student Management" },
   { to: "/attendance", label: "Attendance Logs" },
   { to: "/sessions", label: "Class Sessions" },
+  { to: "/device-logs", label: "Device Logs" },
 ];
 
 export default function Layout() {

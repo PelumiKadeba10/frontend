@@ -5,7 +5,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:5000";
 export const api = axios.create({
   baseURL: API_BASE_URL,
   // headers: { "Content-Type": "application/json" },
-  timeout: 10000,
+  timeout: 15000,
 });
 
 export const endpoints = {
@@ -14,4 +14,5 @@ export const endpoints = {
   sessions: "/sessions",
   activeSession: "/sessions/active",
   management: "/management",
+  deviceLogs: "/api/device/logs",
 };
