@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout";
+import WelcomePage from "./pages/WelcomePage";
 import Dashboard from "./pages/Dashboard";
 import Students from "./pages/Students";
 import SessionsPage from "./pages/SessionsPage";
@@ -12,13 +13,16 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<Layout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="students" element={<Students />} />
-          <Route path="attendance" element={<AttendanceLogs />} />
-          <Route path="sessions" element={<SessionsPage />} />
-          <Route path="management" element={<Management />} />
-          <Route path="device-logs" element={<DeviceLogs />} />
+        <Route >
+          <Route index element={<WelcomePage />} />
+          <Route element={<Layout />} >
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="students" element={<Students />} />
+            <Route path="attendance" element={<AttendanceLogs />} />
+            <Route path="sessions" element={<SessionsPage />} />
+            <Route path="management" element={<Management />} />
+            <Route path="device-logs" element={<DeviceLogs />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

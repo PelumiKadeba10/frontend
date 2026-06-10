@@ -3,7 +3,7 @@ import { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 
 const links = [
-  { to: "/", label: "Dashboard" },
+  { to: "/dashboard", label: "Dashboard" },
   { to: "/students", label: "Student Enrollment" },
   { to: "/sessions", label: "Session Management" },
   { to: "/management", label: "Student Management" },
@@ -27,7 +27,7 @@ export default function Layout() {
             <NavLink
               key={link.to}
               to={link.to}
-              end={link.to === "/"}
+              end={link.to === "/dashboard"}
               className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}
               onClick={() => setSidebarOpen(false)}
             >

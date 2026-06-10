@@ -114,6 +114,124 @@ body {
   overflow-x: hidden;
 }
 
+.welcome-page {
+  min-height: calc(100vh - 5rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0;
+  margin-top: -2.5rem;
+  position: relative;
+  isolation: isolate;
+}
+
+
+.welcome-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background: url("welcome.jpg") center/cover no-repeat;
+
+  filter: blur(4px);
+  transform: scale(1.05); /* hides blur edges */
+
+  z-index: -1;
+}
+
+.welcome-card {
+  width: min(760px, 100%);
+  text-align: center;
+  padding: clamp(2rem, 5vw, 4rem);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.98));
+  border: 2px solid rgba(148, 163, 184, 0.18);
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(25, 37, 61, 0.03), rgba(37, 99, 235, 0.02));
+  pointer-events: none;
+}
+
+.welcome-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.welcome-title {
+  margin: 0;
+  font-size: clamp(2.4rem, 5vw, 4.2rem);
+  line-height: 1.05;
+  color: #0f172a;
+  letter-spacing: -0.04em;
+}
+
+.welcome-copy {
+  max-width: 56ch;
+  margin: 1rem auto 0;
+  color: #475569;
+  text-align: center;
+  font-size: 1.05rem;
+}
+
+.welcome-features {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin-top: 2rem;
+}
+
+.welcome-feature {
+  padding: 0.95rem 1rem;
+  border-radius: 0.9rem;
+  background: rgba(248, 250, 252, 0.96);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 0 0 1px rgba(37, 41, 46, 0.18);
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.welcome-actions {
+  margin-top: 2.25rem;
+  display: flex;
+  justify-content: center;
+}
+
+.welcome-button-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+}
+
+.welcome-button-link.primary {
+  background: #19253d;
+}
+
+.welcome-button {
+  min-width: 220px;
+  padding: 0.9rem 1.4rem;
+  border-radius: 999px;
+}
+
+.welcome-button-link.primary:hover:not(:disabled) {
+  background: #283867;
+}
+
+.welcome-button-link.primary:visited {
+  color: #fff;
+}
+
 .page-header h1 {
   margin: 0;
 }
@@ -136,6 +254,15 @@ body {
   letter-spacing: 0.08em;
   color: #64748b;
   margin-bottom: 0.25rem;
+}
+
+.name {
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  color: #343941;
+  margin-bottom: 1rem;
 }
 
 .muted {
@@ -741,6 +868,11 @@ button.secondary:hover:not(:disabled) {
   .content {
     padding: 1.5rem;
   }
+
+  .welcome-page {
+    min-height: calc(100vh - 3rem);
+    margin-top: -1.5rem;
+  }
 }
 
 /* CAMERA / IMAGE SECTION */
@@ -843,6 +975,15 @@ button.secondary:hover:not(:disabled) {
 
   .create-student-secondary {
     width: 100%;
+  }
+
+  .welcome-features {
+    grid-template-columns: 1fr;
+  }
+
+  .welcome-button {
+    width: 100%;
+    min-width: 0;
   }
 }
 
