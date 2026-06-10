@@ -131,7 +131,7 @@ body {
   position: absolute;
   inset: 0;
 
-  background: url("welcome.jpg") center/cover no-repeat;
+  background: url("/welcome.jpg") center/cover no-repeat;
 
   filter: blur(4px);
   transform: scale(1.05); /* hides blur edges */
