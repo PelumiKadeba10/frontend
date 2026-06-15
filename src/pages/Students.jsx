@@ -84,7 +84,7 @@ export default function Students() {
    * Client-Side Image Compressor
    * Uses HTML5 Canvas to downscale and re-encode images to compressed JPEGs
    */
-  const compressImageFile = (file, maxWidth = 1024, maxHeight = 1024, quality = 0.7) => {
+  const compressImageFile = (file, maxWidth = 1024, maxHeight = 1024, quality = 0.85) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
