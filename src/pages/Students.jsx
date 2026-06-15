@@ -80,6 +80,64 @@ export default function Students() {
     setUploadedFiles([]);
   };
 
+  /**
+   * Client-Side Image Compressor
+   * Uses HTML5 Canvas to downscale and re-encode images to compressed JPEGs
+   */
+  const compressImageFile = (file, maxWidth = 1024, maxHeight = 1024, quality = 0.7) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          let width = img.width;
+          let height = img.height;
+
+          // Maintain Aspect Ratio while limiting boundaries
+          if (width > height) {
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Convert Canvas context into a compressed Blob binary
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                const compressedFile = new File([blob], file.name, {
+                  type: "image/jpeg",
+                  lastModified: Date.now(),
+                });
+                resolve(compressedFile);
+              } else {
+                reject(new Error("Canvas to Blob conversion failed"));
+              }
+            },
+            "image/jpeg",
+            quality // 0.7 sets compression profile to 70% quality
+          );
+        };
+        img.onerror = (err) => reject(err);
+      };
+      reader.onerror = (err) => reject(err);
+    });
+  };
+
   const base64ToFile = async (base64, filename) => {
     const response = await fetch(base64);
     const blob = await response.blob();
@@ -102,20 +160,33 @@ export default function Students() {
       formData.append("matric_no", form.matricNo);
       formData.append("department", form.department);
 
+      // 1. Process Uploaded Files through Compression Engine
       if (captureMode === "upload") {
-        uploadedFiles.forEach((file) => {
-          formData.append("images", file);
-        });
+        for (let i = 0; i < uploadedFiles.length; i++) {
+          try {
+            const compressed = await compressImageFile(uploadedFiles[i]);
+            formData.append("images", compressed);
+          } catch (compressErr) {
+            console.error("Compression skipped for file, using raw file:", compressErr);
+            formData.append("images", uploadedFiles[i]); // Fallback if canvas pipeline breaks
+          }
+        }
       }
 
+      // 2. Process Live Web Camera base64 String Captures
       if (captureMode === "camera") {
         for (let i = 0; i < capturedImages.length; i++) {
-          const imageFile = await base64ToFile(
+          const rawFile = await base64ToFile(
             capturedImages[i],
             `${form.matricNo}_${i + 1}.jpg`
           );
-
-          formData.append("images", imageFile);
+          
+          try {
+            const compressed = await compressImageFile(rawFile);
+            formData.append("images", compressed);
+          } catch (compressErr) {
+            formData.append("images", rawFile);
+          }
         }
       }
 
