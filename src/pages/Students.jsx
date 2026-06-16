@@ -226,8 +226,7 @@ export default function Students() {
       }
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.error ?? "Failed to enroll student.");
-    } finally {
+      setError(err.response?.data?.message ?? err.response?.data?.error ?? "Failed to enroll student.")    } finally {
       setSubmitting(false);
     }
   };
